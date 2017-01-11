@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>12FF86AB-301F-4C81-AC71-E3206864C25C</string>
+	<key>IDESourceControlProjectName</key>
+	<string>project</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>5C93167D3E6A958936C473160C258804F7D817D2</key>
+		<string>https://github.com/sigasiga/fresh_vegetables.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>fresh_vegtables/fresh_vegtables.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>5C93167D3E6A958936C473160C258804F7D817D2</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/sigasiga/fresh_vegetables.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>5C93167D3E6A958936C473160C258804F7D817D2</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>5C93167D3E6A958936C473160C258804F7D817D2</string>
+			<key>IDESourceControlWCCName</key>
+			<string>computer_vision</string>
+		</dict>
+	</array>
+</dict>
+</plist>
