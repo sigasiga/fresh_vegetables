@@ -24,6 +24,10 @@
 #define AREA_TH (0.1)
 //円形度の閾値
 #define CIRC_TH (0.50)
+//色の閾値
+#define W_TH (50)
+//太さの差の閾値
+#define CW_TH (12)
 
 
 //---------------------------------------------------------関数のプロトタイプ宣言
@@ -292,13 +296,12 @@ int Judge_Cucumber(cv::Mat cucumber_picture){
     
     //変数宣言
     //画像の宣言
-    cv::Mat gray_img, bin_img, dst_img,hsv_img;
-    //平均算出用関数（色相、画素数）
-    double h = 0, count = 0;
+    cv::Mat gray_img, bin_img, tmp_img, dst_img,hsv_img;
+    double h = 0, cucumber_w = 0, count = 0;
     //輪郭の座標リストの宣言
     std::vector< std::vector< cv::Point > > contours;
     //判定結果
-    int judge=0;//1:美味しい 0:不味い
+    int judge_h=0, judge_w=1, judge=0;//1:美味しい 0:不味い
     //入力画像を結果画像にコピー
     dst_img = cucumber_picture.clone();
     
@@ -307,8 +310,7 @@ int Judge_Cucumber(cv::Mat cucumber_picture){
     cv::cvtColor(cucumber_picture, bin_img, CV_BGR2GRAY);
     cv::cvtColor(cucumber_picture, hsv_img, CV_BGR2HSV);
     
-    //二値化
-    cv::Vec3b hsv;
+    cv::Vec3b hsv,g;
     //画像の走査
     for (int y=0; y<cucumber_picture.rows; y++) {
         for (int x=0; x<cucumber_picture.cols; x++) {
@@ -330,27 +332,82 @@ int Judge_Cucumber(cv::Mat cucumber_picture){
     
     //きゅうりの表面と判断された部分の色値の平均算出
     double h_average = h/count;
-    printf("%f\n",h_average);
+    //printf("%f\n",h_average);
+    
     //黄色に近くなければ美味しい
     if (h_average > 50) {
-        judge = 1;
+        judge_h = 1;
+        //printf("%d\n",judge_h);
     }
     
+    //二値画像コピー
+    tmp_img = bin_img.clone();
+    //輪郭抽出(輪郭内塗りつぶし)
+    cv::findContours(tmp_img, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+    for (int i=0; i<contours.size(); i++) {
+        cv::drawContours(tmp_img, contours, i, CV_RGB(255, 255, 255), -1);
+    }
     
-    //9. 表示
-    //cv::imshow(WINDOW_NAME_INPUT, cucumber_picture);
-    //cv::imshow(WINDOW_NAME_BINARY, bin_img); //二値画像は，findcontour後では使用できない
-    //cv::waitKey();
+    cv::cvtColor(tmp_img, tmp_img, CV_GRAY2RGB);
+    
+    count = 0;
+    
+    //太さの平均値の算出
+    //白い画素の個数を調べる
+    for (int y=100; y<cucumber_picture.rows-100; y++) {
+        for (int x=0; x<cucumber_picture.cols; x++) {
+            
+            g=tmp_img.at<cv::Vec3b>(y,x);
+            
+            if(g[0]==255){
+                cucumber_w++;
+            }
+        }
+        count++;
+    }
+    
+    double cw_average = cucumber_w / count;
+    
+    for (int y=100; y<cucumber_picture.rows-100; y++) {
+        cucumber_w = 0;
+        for (int x=0; x<cucumber_picture.cols; x++) {
+            g=tmp_img.at<cv::Vec3b>(y,x);
+            
+            if(g[0]==255){
+                cucumber_w++;
+            }
+        }
+        //平均値よりも閾値以上の差があれば、まずい
+        if(fabs(cucumber_w-cw_average)>CW_TH){
+            judge_w = 0;
+        }
+    }
+    //printf("%d\n",judge_w);
     
     
-    return judge;//1:美味しい 0:不味い
+    //表示
+    //    cv::imshow(WINDOW_NAME_INPUT, cucumber_picture);
+    //    cv::imshow(WINDOW_NAME_BINARY, bin_img);
+    //    cv::imshow(WINDOW_NAME_OUTPUT, tmp_img);
+    //    cv::waitKey();
+    
+    judge = judge_h + judge_w;
+    
+    
+    printf("%d\n",judge);
+    
+    return judge;//2:とても美味しい 1:美味しい 0:不味い
+
 }
 
 //結果表示きゅうりの美味しさjudge
 void Printf_Result_Judge_Cucumber(int result){
     //きゅうりの美味しさ判別
-    if(result==1 )
+    if(result==2 )
     {
+        printf("とてもおいしいきゅうり\n");
+    }
+    else if(result==1){
         printf("おいしいきゅうり\n");
     }
     else{

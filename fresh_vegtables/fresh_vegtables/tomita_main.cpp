@@ -134,10 +134,10 @@ int Judge_Cucumber(cv::Mat cucumber_picture){
     
     
     //表示
-    cv::imshow(WINDOW_NAME_INPUT, cucumber_picture);
-    cv::imshow(WINDOW_NAME_BINARY, bin_img);
-    cv::imshow(WINDOW_NAME_OUTPUT, tmp_img);
-    cv::waitKey();
+//    cv::imshow(WINDOW_NAME_INPUT, cucumber_picture);
+//    cv::imshow(WINDOW_NAME_BINARY, bin_img);
+//    cv::imshow(WINDOW_NAME_OUTPUT, tmp_img);
+//    cv::waitKey();
     
     judge = judge_h + judge_w;
     
@@ -152,13 +152,13 @@ void Printf_Result_Judge_Cucumber(int result){
     //きゅうりの美味しさ判別
     if(result==2 )
     {
-        printf("とてもおいしい\n");
+        printf("とてもおいしいきゅうり\n");
     }
     else if(result==1){
-        printf("おいしい\n");
+        printf("おいしいきゅうり\n");
     }
     else{
-        printf("まずい\n");
+        printf("まずいきゅうり\n");
     }
     
 }
