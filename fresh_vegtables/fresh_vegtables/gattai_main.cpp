@@ -32,7 +32,15 @@
 int Judge_Tomato(cv::Mat tomato_picture);
 //結果表示トマトの美味しさjudge
 void Printf_Result_Judge_Tomato(int result);
+//色値取得用の関数＿にんじん
+void color_input(cv::Mat src_img);
+//関数のプロトタイプ宣言
+//きゅうりの美味しさ
+int Judge_Cucumber(cv::Mat cucumber_picture);
+//結果表示
+void Printf_Result_Judge_Cucumber(int result);
 
+//---------------------------------------------------------メイン文
 //メイン文
 int main(int argc, const char * argv[]) {
     
@@ -69,12 +77,14 @@ int main(int argc, const char * argv[]) {
                 
             case 'k'://kyuri の k
                 //きゅうりの美味しさ判別
-                //引数に画像frameを入れる関数
+                //きゅうりの美味しさ判別
+                Printf_Result_Judge_Cucumber( Judge_Cucumber(frame) );
                 break;
                 
-            case 'n'://ninjin の t
+            case 'n'://ninjin の n
                 //にんじんの美味しさ判別
-                //引数に画像frameを入れる関数
+                //人参のおいしいか判断関数
+                color_input(frame);
                 break;
                 
             default:
@@ -85,10 +95,11 @@ int main(int argc, const char * argv[]) {
         //終了
         if(kamera_break_flag==1)break;
     }
-    
+    printf("おわり\n");
     
     return 0;
 }
+//##################################################################################佐藤
 //---------------------------------------------------------Judge_Tomato
 //トマトの美味しさjudge
 int Judge_Tomato(cv::Mat tomato_picture){
@@ -237,4 +248,113 @@ int memo(){
         return (-1);
     }
     return 0;
+}
+//##############################################################################しが
+//------------------------------------------
+//色値取得用の関数
+void color_input(cv::Mat src_img){
+    
+    //変数の宣言
+    int x, y;
+    int count=0;
+    int s_r=0,s_g=0,s_b=0;//色値記録用変数
+    double r=0,g=0,b=0;//色値平均計算用変数
+    
+    //画像の走査
+    for (y=0; y<src_img.rows; y++) {
+        for (x=0; x<src_img.cols; x++) {
+            //画素値の取得
+            cv::Vec3b s = src_img.at<cv::Vec3b>(y, x);
+            if(s[0]<100 && s[1]<160 && s[1]>50 && s[2]>150){//オレンジの色値を加算
+                s_b = s_b + s[0]; //B
+                s_g = s_g + s[1]; //G
+                s_r = s_r + s[2]; //R
+                count++;//オレンジ画素の計算
+            }
+        }
+    }
+    
+    //オレンジっぽい色のRGBの色値の平均を出す
+    r = (double)s_r / (double)count;
+    g = (double)s_g / (double)count;
+    b = (double)s_b / (double)count;
+    
+    if(b<60 && g<120 && g>80 && r>200){//濃いオレンジであった場合
+        printf("おいしい人参\n");
+    }else{
+        printf("まずい人参\n");
+    }
+    //    printf("%f %f %f\n",r, g, b);//色値の出力
+}
+//##############################################################################とみた
+//きゅうりの美味しさjudge
+int Judge_Cucumber(cv::Mat cucumber_picture){
+    
+    //変数宣言
+    //画像の宣言
+    cv::Mat gray_img, bin_img, dst_img,hsv_img;
+    //平均算出用関数（色相、画素数）
+    double h = 0, count = 0;
+    //輪郭の座標リストの宣言
+    std::vector< std::vector< cv::Point > > contours;
+    //判定結果
+    int judge=0;//1:美味しい 0:不味い
+    //入力画像を結果画像にコピー
+    dst_img = cucumber_picture.clone();
+    
+    //5. グレースケール化,HSV画像化
+    cv::cvtColor(cucumber_picture, gray_img, CV_BGR2GRAY);
+    cv::cvtColor(cucumber_picture, bin_img, CV_BGR2GRAY);
+    cv::cvtColor(cucumber_picture, hsv_img, CV_BGR2HSV);
+    
+    //二値化
+    cv::Vec3b hsv;
+    //画像の走査
+    for (int y=0; y<cucumber_picture.rows; y++) {
+        for (int x=0; x<cucumber_picture.cols; x++) {
+            
+            hsv=hsv_img.at<cv::Vec3b>(y,x);
+            
+            //きゅうり表面部分（黄色から緑）
+            if(30<hsv[0] && hsv[0]<80 && hsv[1]>20){
+                bin_img.at<uchar>(y, x)=255;
+                //色値平均を出すための色値保存
+                h+=hsv[0];
+                count++;
+            }else{
+                bin_img.at<uchar>(y, x)=0;
+            }
+        }
+    }
+    
+    
+    //きゅうりの表面と判断された部分の色値の平均算出
+    double h_average = h/count;
+    printf("%f\n",h_average);
+    //黄色に近くなければ美味しい
+    if (h_average > 50) {
+        judge = 1;
+    }
+    
+    
+    //9. 表示
+    //cv::imshow(WINDOW_NAME_INPUT, cucumber_picture);
+    //cv::imshow(WINDOW_NAME_BINARY, bin_img); //二値画像は，findcontour後では使用できない
+    //cv::waitKey();
+    
+    
+    return judge;//1:美味しい 0:不味い
+}
+
+//結果表示きゅうりの美味しさjudge
+void Printf_Result_Judge_Cucumber(int result){
+    //きゅうりの美味しさ判別
+    if(result==1 )
+    {
+        printf("おいしいきゅうり\n");
+    }
+    else{
+        printf("まずいきゅうり\n");
+    }
+    
 }
